@@ -1,5 +1,5 @@
 ---
-title: "naive-approach"
+title: "Naive Approach"
 ---
 
 ```{r, include = FALSE}
@@ -10,9 +10,9 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(tidyverse)
 library(joint)
 ```
-
 
 ## Create synthetic data
 
