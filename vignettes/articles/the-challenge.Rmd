@@ -32,6 +32,7 @@ create a joint distribution
 
 ```{r}
 joint <- tidyr::crossing(age_lsoa$lsoa,
+                         age_lsoa$age_91_categories,
                          age_disability_la$disability_3_categories,
                          age_nssec_la$nssec_10_categories) |>
   mutate(n = NA_real_)
