@@ -1,0 +1,41 @@
+---
+title: "the-challenge"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidyverse)
+library(joint)
+```
+
+From the three "target" distributions:
+
+```{r}
+age_lsoa |> head()
+```
+
+```{r}
+age_disability_la |> head()
+```
+
+```{r}
+age_nssec_la |> head()
+```
+
+create a joint distribution
+
+```{r}
+joint <- tidyr::crossing(age_lsoa$lsoa,
+                         age_disability_la$disability_3_categories,
+                         age_nssec_la$nssec_10_categories) |>
+  mutate(n = NA_real_)
+joint |> head()
+```
+
+that aligns with the target distributions.

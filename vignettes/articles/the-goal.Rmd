@@ -1,0 +1,39 @@
+---
+title: "the-goal"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidyverse)
+library(joint)
+```
+
+## Introduction
+
+In survey statistics, we would often like to access the joint distribution of multiple variables. However, due to privacy considerations, census data is only released in forms that prevent personal identification. The goal is to use the available released data to approximate the underlying joint distribution.
+
+## How is census information released?
+
+Census data is released as counts of individuals with specific characteristics. For example, when requesting age data by LSOA (Lower Layer Super Output Area), the data may look like this:
+
+```{r}
+tibble(age = 16:20,
+       lsoa = letters[1:5],
+       n = rnorm(5, 1000, 100) |> round())
+```
+
+Each row represents a "stratum" or "cell." If the count within a cell is too small, there is a risk of identifying individuals in that cell. Consequently, the census may restrict the download of data related to such cells. In some cases, multiple geographic areas may be withheld, or even all of them, if the request is highly specific.
+
+Another privacy protection measure is "record-switching," where individuals are moved between cells. While this typically has minimal impact on statistical analyses, it can lead to inconsistent results in released marginal distributions, albeit to a slight extent.
+
+## What methods exist?
+
+The most common method to create a joint distribution from partial information is called Iterative Proportional Fitting. This approach allows analysts to derive a joint distribution based on a series of marginal distributions.
+
+## What opportunities are there?

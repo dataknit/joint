@@ -1,0 +1,129 @@
+---
+title: "naive-approach"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(joint)
+```
+
+
+## Create synthetic data
+
+Create joint distribution
+
+```{r}
+set.seed(123)
+n <- 100000
+
+# more complex sim for later
+
+gender <- tibble(values = c("female", "male", "other"), probability = c(0.49, 0.49, 0.2))
+# ns_sec <- tibble(values = c("1-2", "3", "4", "5", "6-7", "8", "9 - other", "9 - students"), probability = c(0.5, 0.1, 0.06, 0.06, 0.09, 0.02, 0.03, 0.03))
+ns_sec <- tibble(values = c("0", "1", "2", "3", "4", "5", "6", "7"), probability = c(0.5, 0.1, 0.06, 0.06, 0.09, 0.02, 0.03, 0.03))
+msoa <- tibble(values = letters[1:5], probability = 0.2)
+
+sim <- tibble(.rows = n) |>
+  rowwise() |>
+  mutate(age = runif(n=1, min = 18, max = 95) |> floor(),
+         gender = sample(gender$values, prob=gender$probability, 1, replace = TRUE),
+         ns_sec = sample(ns_sec$values, prob=ns_sec$probability, 1, replace = TRUE),
+         msoa = sample(msoa$values, prob=msoa$probability, 1, replace = TRUE)) |>
+  ungroup()
+
+
+
+# Calculate joint distribution
+joint <- sim |>
+  group_by(gender, ns_sec, msoa) |>
+  summarize(count = n()) |>
+  ungroup() |>
+  mutate(proportion = count / sum(count))
+```
+
+Create marginal distributions
+
+```{r}
+marginal_gender <- joint |>
+  group_by(gender) |>
+  summarize(marginal_count = sum(count)
+            # marginal_proportion = sum(proportion)
+            )
+
+marginal_ns_sec <- joint |>
+  group_by(ns_sec) |>
+  summarize(marginal_count = sum(count)
+            # marginal_proportion = sum(proportion)
+            )
+
+marginal_msoa <- joint |>
+  group_by(msoa) |>
+  summarize(marginal_count = sum(count)
+            # marginal_proportion = sum(proportion)
+            )
+```
+
+
+## Set up the form of the joint distribution that we desire
+
+Empty joint. This is what we want to fill correctly with the numbers of people in each row.
+
+
+```{r}
+empty_joint <- tidyr::crossing(gender = gender$values,
+                               ns_sec = ns_sec$values,
+                               msoa = msoa$values)
+```
+
+Add unique id to each row
+
+```{r}
+empty_joint <- empty_joint |>
+  rowid_to_column()
+```
+
+
+## Iterative proportional fitting
+
+```{r}
+library(ipfr)
+```
+
+
+```{r}
+targets <- list()
+targets$gender <- marginal_gender |>
+  pivot_wider(names_from = gender, values_from = marginal_count)
+targets$ns_sec <- marginal_ns_sec |>
+  pivot_wider(names_from = ns_sec, values_from = marginal_count)
+targets$msoa <- marginal_msoa |>
+  pivot_wider(names_from = msoa, values_from = marginal_count)
+
+result <- ipu(empty_joint, targets,
+              relative_gap = 0.00001,
+              max_iterations = 10000,
+              absolute_diff = 0.01,
+              )
+weights <- result$weight_tbl
+answer <- joint |> left_join(weights)
+
+answer |> ggplot(aes(count, weight)) + geom_point() + geom_abline(slope = 1)
+```
+
+```{r}
+answer <- answer |> 
+  mutate(difference = weight - count)
+answer |>
+  ggplot(aes(count, 100*difference/count)) + geom_point() + geom_abline(slope = 0)
+```
+
+
+## Issues
+
+The main issues is that we were forced to use target distributions that are just vectors. In general we want to use n-dimensional target distributions.
