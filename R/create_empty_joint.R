@@ -7,15 +7,17 @@
 #' @export
 #'
 #' @examples
-create_empty_joint <- function(targets, columns_to_exclude) {
+create_empty_joint <- function(targets, columns_to_exclude = NULL) {
   flat_unique_values <- targets |>
-    map(~ .x[, !names(.x) %in% "n"]) |>
-    map(~ map(.x, function(vec) {
+    purrr::map(~ .x[, !names(.x) %in% "n"]) |>
+    purrr::map(~ purrr::map(.x, function(vec) {
       sort(unique(vec)) # Sort the elements to make permutations the same
     })) |>
     unlist(recursive = FALSE)
 
-  flat_unique_values <- remove_vectors_by_names(flat_unique_values, columns_to_exclude)
+  if (!is.null(columns_to_exclude)) {
+    flat_unique_values <- remove_vectors_by_names(flat_unique_values, columns_to_exclude)
+  }
 
   unique_indices <- !duplicated(flat_unique_values)
   unique_flat_unique_values <- flat_unique_values[unique_indices]
@@ -30,8 +32,8 @@ create_empty_joint <- function(targets, columns_to_exclude) {
 
 # Function to remove vectors by names from the targets list
 remove_vectors_by_names <- function(char_list, names_to_remove) {
-  if (!is.list(char_list) || !all(sapply(char_list, is.character))) {
-    stop("Error: Input must be a list of character vectors.")
+  if (!is.list(char_list) || !all(sapply(char_list, function(x) is.character(x) || is.integer(x)))) {
+    stop("Error: Input must be a list of character or integer vectors.")
   }
 
   if (!is.character(names_to_remove)) {
