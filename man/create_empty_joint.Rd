@@ -4,10 +4,10 @@
 \alias{create_empty_joint}
 \title{Create empty joint from targets}
 \usage{
-create_empty_joint(targets)
+create_empty_joint(targets, columns_to_exclude = NULL, backend = "base")
 }
 \arguments{
-\item{targets}{}
+\item{backend}{"base", "dplyr" or "datatable"}
 }
 \description{
 Create empty joint from targets
