@@ -24,7 +24,7 @@ fit <- function(targets, empty_joint = NULL, iterations = 10,
     empty_joint <- create_empty_joint(targets)
   }
 
-  summarise_process(empty_joint, targets)
+  summarise_fit_process(empty_joint, targets)
 
   # set up initial frame
   joint <- empty_joint |>
@@ -55,7 +55,7 @@ check_for_duplicate_strata <- function(targets) {
   }
 }
 
-summarise_process <- function(targets, empty_joint) {
+summarise_fit_process <- function(targets, empty_joint) {
   message(glue::glue("You have provided {length(targets)} target distributions.
                      These are to be aligned to {ncol(empty_joint)} variables."))
 }

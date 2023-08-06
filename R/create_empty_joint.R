@@ -24,6 +24,8 @@ create_empty_joint <- function(targets, columns_to_exclude = NULL,
   unique_indices <- !duplicated(flat_unique_values)
   unique_flat_unique_values <- flat_unique_values[unique_indices]
 
+  summarise_create_empty_joint_process(unique_flat_unique_values)
+
   if (backend %in% c("dplyr", "base")) {
   combinations_tibble <- unique_flat_unique_values |>
     expand.grid(stringsAsFactors = FALSE)
@@ -36,6 +38,12 @@ create_empty_joint <- function(targets, columns_to_exclude = NULL,
     tibble::as_tibble()
 
   return(combinations_tibble)
+}
+
+summarise_create_empty_joint_process <- function(unique_flat_unique_values) {
+  n_cols <- length(unique_flat_unique_values)
+  n_rows <- prod(lengths(unique_flat_unique_values))
+  message(glue::glue("Creating an empty joint of {n_rows} rows and {n_cols} columns."))
 }
 
 # Function to remove vectors by names from the targets list
