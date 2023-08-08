@@ -55,3 +55,13 @@ backend (ignoring permutations and attributes differences)", {
 
   expect_equal(result_dplyr, result_datatable)
 })
+
+test_that("create_empty_joint summary is correct", {
+  targets <- list(tibble::tibble(a = 1:5, b = 5:9),
+                  tibble::tibble(b = 5:9),
+                  tibble::tibble(c = 2:6, d = 3:7))
+  columns_to_exclude <- c("a")
+
+  expect_message(create_empty_joint(targets, columns_to_exclude),
+                 "Creating an empty joint of 125 rows and 3 columns.")
+})
