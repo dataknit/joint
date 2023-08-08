@@ -20,11 +20,15 @@ test_that("fit executes without errors and produces a tibble", {
 
   targets <- list(target1, target2, target3)
 
-  joint <- fit(targets, empty_joint, backend = "datatable", iterations = 1)
+  joint <- fit(targets, empty_joint, backend = "datatable", iterations = 3)
+
+  joint_base <- fit(targets, empty_joint, backend = "base", iterations = 3)
 
   expect_s3_class(joint, "tbl_df")
   expect_identical(names(joint), c("a", "b", "c", "n"))
 
   expect_equal(joint |> dplyr::arrange(n) |> dplyr::select(n) |> as.character(),
                joint_actual |> dplyr::arrange(n) |> dplyr::select(n) |> as.character())
+
+  expect_equal(joint, joint_base)
 })
