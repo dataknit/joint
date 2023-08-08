@@ -4,11 +4,18 @@
 \alias{fit}
 \title{Fit}
 \usage{
-fit(joint, targets, iterations = 10, remove_zeroes = TRUE)
+fit(
+  targets,
+  empty_joint = NULL,
+  iterations = 10,
+  remove_zeroes = TRUE,
+  backend = "base"
+)
 }
 \arguments{
-\item{remove_zeroes}{Often cells with zero people in are not required in an analysis.}
+\item{remove_zeroes}{If cells with zero people are not required for your analysis,
+removing zeroes will speed up the fit}
 }
 \description{
-Fit
+Create a joint distribution from a list of target distributions
 }
