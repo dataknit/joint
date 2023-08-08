@@ -29,7 +29,7 @@ create_empty_joint <- function(targets, columns_to_exclude = NULL,
   if (backend %in% c("dplyr", "base")) {
   combinations_tibble <- unique_flat_unique_values |>
     expand.grid(stringsAsFactors = FALSE)
-  } else if (backend == "datatable") {
+  } else if (backend %in% c("datatable", "data.table")) {
     combinations_tibble <- unique_flat_unique_values |>
       get_permutations_data_table()
   }
