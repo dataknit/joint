@@ -48,7 +48,7 @@ backend (ignoring permutations and attributes differences)", {
                                          backend = "datatable")
 
   result_dplyr <- result_dplyr |>
-    arrange(b, d)
+    dplyr::arrange(b, d)
 
   result_dplyr <- data.frame(result_dplyr)
   result_datatable <- data.frame(result_datatable)

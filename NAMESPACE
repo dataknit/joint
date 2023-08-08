@@ -3,3 +3,4 @@
 export(create_empty_joint)
 export(fit)
 export(get_marginal)
+importFrom(data.table,`:=`)
